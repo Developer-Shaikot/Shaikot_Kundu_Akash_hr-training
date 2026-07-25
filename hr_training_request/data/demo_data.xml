@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Demo Data for hr_training_request
+
+    Creates three users covering all three roles:
+      1. alice.employee  → Training Requester
+      2. bob.manager     → Training Manager Approver (Alice's line manager)
+      3. carol.hr        → Training HR Approver
+
+    Also creates sample training requests in various states so the full
+    workflow can be tested immediately after installation.
+
+    NOTE: This data is loaded only in demo mode (listed under 'demo' in manifest).
+    Passwords are set to 'odoo' for all demo users (development only).
+-->
+<odoo>
+    <data noupdate="1">
+
+        <!-- ═══════════════════════════════════════
+             Demo Users
+             ═══════════════════════════════════════ -->
+
+        <!-- Alice: Training Requester (employee) -->
+        <record id="demo_user_alice" model="res.users">
+            <field name="name">Alice Employee</field>
+            <field name="login">alice.employee</field>
+            <field name="password">odoo</field>
+            <field name="email">alice.employee@demo.local</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('hr_training_request.group_training_requester')),
+            ]"/>
+        </record>
+
+        <!-- Bob: Training Manager Approver (Alice's manager) -->
+        <record id="demo_user_bob" model="res.users">
+            <field name="name">Bob Manager</field>
+            <field name="login">bob.manager</field>
+            <field name="password">odoo</field>
+            <field name="email">bob.manager@demo.local</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('hr_training_request.group_training_manager')),
+            ]"/>
+        </record>
+
+        <!-- Carol: Training HR Approver -->
+        <record id="demo_user_carol" model="res.users">
+            <field name="name">Carol HR</field>
+            <field name="login">carol.hr</field>
+            <field name="password">odoo</field>
+            <field name="email">carol.hr@demo.local</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('hr_training_request.group_training_hr')),
+            ]"/>
+        </record>
+
+        <!-- ═══════════════════════════════════════
+             Demo Employees (linked to users)
+             ═══════════════════════════════════════ -->
+
+        <!-- Bob's employee record first (he is Alice's manager) -->
+        <record id="demo_employee_bob" model="hr.employee">
+            <field name="name">Bob Manager</field>
+            <field name="user_id" ref="demo_user_bob"/>
+            <field name="work_email">bob.manager@demo.local</field>
+            <field name="job_title">Engineering Manager</field>
+        </record>
+
+        <!-- Carol's employee record -->
+        <record id="demo_employee_carol" model="hr.employee">
+            <field name="name">Carol HR</field>
+            <field name="user_id" ref="demo_user_carol"/>
+            <field name="work_email">carol.hr@demo.local</field>
+            <field name="job_title">HR Specialist</field>
+        </record>
+
+        <!-- Alice's employee record — Bob is her line manager (parent_id) -->
+        <record id="demo_employee_alice" model="hr.employee">
+            <field name="name">Alice Employee</field>
+            <field name="user_id" ref="demo_user_alice"/>
+            <field name="parent_id" ref="demo_employee_bob"/>
+            <field name="work_email">alice.employee@demo.local</field>
+            <field name="job_title">Software Engineer</field>
+        </record>
+
+        <!-- ═══════════════════════════════════════
+             Demo Training Requests (various states)
+             ═══════════════════════════════════════ -->
+
+        <!-- Request 1: DRAFT — Alice is still preparing this one -->
+        <record id="demo_request_draft" model="hr.training.request">
+            <field name="employee_id" ref="demo_employee_alice"/>
+            <field name="course_name">Python Advanced Programming</field>
+            <field name="training_provider">Udemy / Real Python</field>
+            <field name="start_date">2026-09-01</field>
+            <field name="end_date">2026-09-05</field>
+            <field name="cost">299.00</field>
+            <field name="justification">
+                I need to deepen my knowledge of Python async programming and
+                advanced OOP patterns to contribute more effectively to our
+                backend services.
+            </field>
+            <field name="state">draft</field>
+        </record>
+
+        <!-- Request 2: SUBMITTED — Alice has submitted, Bob needs to approve -->
+        <record id="demo_request_submitted" model="hr.training.request">
+            <field name="employee_id" ref="demo_employee_alice"/>
+            <field name="course_name">Odoo 17 Developer Certification</field>
+            <field name="training_provider">Odoo S.A. / OdooLearn</field>
+            <field name="start_date">2026-10-15</field>
+            <field name="end_date">2026-10-18</field>
+            <field name="cost">1200.00</field>
+            <field name="justification">
+                This certification will validate my Odoo development skills and
+                enable me to take on more complex module development tasks without
+                relying on external consultants.
+            </field>
+            <field name="state">submitted</field>
+        </record>
+
+        <!-- Request 3: MANAGER APPROVED — Bob approved, Carol (HR) needs to give final approval -->
+        <record id="demo_request_manager_approved" model="hr.training.request">
+            <field name="employee_id" ref="demo_employee_alice"/>
+            <field name="course_name">AWS Cloud Practitioner Essentials</field>
+            <field name="training_provider">Amazon Web Services Training</field>
+            <field name="start_date">2026-11-03</field>
+            <field name="end_date">2026-11-07</field>
+            <field name="cost">850.00</field>
+            <field name="justification">
+                Our infrastructure is migrating to AWS. This foundational
+                certification will allow me to participate in architecture
+                discussions and reduce our dependency on DevOps consultants.
+            </field>
+            <field name="state">manager_approved</field>
+        </record>
+
+        <!-- Request 4: HR APPROVED — Fully approved, terminal state -->
+        <record id="demo_request_hr_approved" model="hr.training.request">
+            <field name="employee_id" ref="demo_employee_alice"/>
+            <field name="course_name">Scrum Master Certification (PSM I)</field>
+            <field name="training_provider">Scrum.org</field>
+            <field name="start_date">2026-08-10</field>
+            <field name="end_date">2026-08-10</field>
+            <field name="cost">150.00</field>
+            <field name="justification">
+                Formalising my Agile/Scrum knowledge to better facilitate sprint
+                ceremonies and improve team velocity.
+            </field>
+            <field name="state">hr_approved</field>
+        </record>
+
+        <!-- Request 5: REJECTED — Rejected by manager (cost too high) -->
+        <record id="demo_request_rejected" model="hr.training.request">
+            <field name="employee_id" ref="demo_employee_alice"/>
+            <field name="course_name">Machine Learning Specialization (Stanford)</field>
+            <field name="training_provider">Coursera / Stanford University</field>
+            <field name="start_date">2026-09-15</field>
+            <field name="end_date">2026-12-15</field>
+            <field name="cost">4500.00</field>
+            <field name="justification">
+                Would enable me to build ML-powered features for our product roadmap.
+            </field>
+            <field name="state">rejected</field>
+        </record>
+
+        <!-- Request 6: CANCELLED — Alice changed her mind -->
+        <record id="demo_request_cancelled" model="hr.training.request">
+            <field name="employee_id" ref="demo_employee_alice"/>
+            <field name="course_name">Docker &amp; Kubernetes Fundamentals</field>
+            <field name="training_provider">Linux Foundation</field>
+            <field name="start_date">2026-08-20</field>
+            <field name="end_date">2026-08-22</field>
+            <field name="cost">399.00</field>
+            <field name="justification">Containerisation skills for local dev environment setup.</field>
+            <field name="state">cancelled</field>
+        </record>
+
+        <!-- Request 7: Bob's own request (demonstrates manager-level visibility) -->
+        <record id="demo_request_bob_draft" model="hr.training.request">
+            <field name="employee_id" ref="demo_employee_bob"/>
+            <field name="course_name">Engineering Leadership Excellence</field>
+            <field name="training_provider">Pluralsight</field>
+            <field name="start_date">2026-10-01</field>
+            <field name="end_date">2026-10-03</field>
+            <field name="cost">600.00</field>
+            <field name="justification">
+                Leadership coaching to improve team management and mentoring practices.
+            </field>
+            <field name="state">submitted</field>
+        </record>
+
+    </data>
+</odoo>

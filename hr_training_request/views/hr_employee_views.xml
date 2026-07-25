@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    hr.employee form view inheritance — adds the Training Requests smart button.
+
+    Strategy: Use <xpath> to inject into the existing button_box div.
+    No core views are replaced or overridden — only extended (NFR-COMP-03).
+
+    The button is visible to all Training Requester group members (and above)
+    since the count is computed respecting each user's record rules:
+      - An employee sees their own count
+      - A manager sees their team's total count
+      - HR sees the company-wide count
+-->
+<odoo>
+    <data>
+
+        <record id="view_hr_employee_training_button" model="ir.ui.view">
+            <field name="name">hr.employee.training.button</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button class="oe_stat_button"
+                            type="object"
+                            name="action_open_training_requests"
+                            icon="fa-graduation-cap"
+                            groups="hr_training_request.group_training_requester">
+                        <field name="training_request_count"
+                               widget="statinfo"
+                               string="Training Requests"/>
+                    </button>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

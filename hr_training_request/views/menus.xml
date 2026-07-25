@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Menu Items and Window Actions for hr_training_request
+
+    Menu Structure:
+      Training (top-level)
+        ├── My Requests           → All groups; defaults to user's own requests
+        ├── Pending Manager Approval → Manager group; defaults to submitted state
+        ├── Pending HR Approval   → HR group; defaults to manager_approved state
+        └── All Requests          → HR group only; no domain restriction (RLS handles it)
+
+    Context/Domain strategy:
+      - Each action's domain and context pre-filters to the most relevant view
+        for that role, reducing noise and improving UX.
+      - Record rules still apply on top of these domains — double security.
+-->
+<odoo>
+    <data>
+
+        <!-- ── Window Actions ── -->
+
+        <record id="action_training_request_my" model="ir.actions.act_window">
+            <field name="name">My Training Requests</field>
+            <field name="res_model">hr.training.request</field>
+            <field name="view_mode">list,form</field>
+            <!-- Pre-filtered to the current user's requests -->
+            <field name="domain">[('employee_id.user_id', '=', uid)]</field>
+            <field name="context">{
+                'search_default_filter_my_requests': 1,
+            }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    You have no training requests yet.
+                </p>
+                <p>
+                    Create your first training request to begin the approval process.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_training_request_pending_manager" model="ir.actions.act_window">
+            <field name="name">Pending Manager Approval</field>
+            <field name="res_model">hr.training.request</field>
+            <field name="view_mode">list,form</field>
+            <!-- Pre-filtered to submitted requests awaiting manager action -->
+            <field name="domain">[('state', '=', 'submitted')]</field>
+            <field name="context">{
+                'search_default_filter_submitted': 1,
+                'search_default_filter_my_team': 1,
+            }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No requests are pending your approval.
+                </p>
+                <p>
+                    Submitted requests from your direct reports will appear here.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_training_request_pending_hr" model="ir.actions.act_window">
+            <field name="name">Pending HR Approval</field>
+            <field name="res_model">hr.training.request</field>
+            <field name="view_mode">list,form</field>
+            <!-- Pre-filtered to manager-approved requests awaiting HR action -->
+            <field name="domain">[('state', '=', 'manager_approved')]</field>
+            <field name="context">{
+                'search_default_filter_manager_approved': 1,
+            }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No requests are pending final HR approval.
+                </p>
+                <p>
+                    Manager-approved requests requiring your final sign-off will appear here.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_training_request_all" model="ir.actions.act_window">
+            <field name="name">All Training Requests</field>
+            <field name="res_model">hr.training.request</field>
+            <field name="view_mode">list,form</field>
+            <!-- No domain restriction — record rules handle visibility -->
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No training requests found.
+                </p>
+                <p>
+                    All training requests across the company will appear here.
+                </p>
+            </field>
+        </record>
+
+        <!-- ── Top-Level Menu ── -->
+
+        <menuitem id="menu_training_root"
+                  name="Training"
+                  sequence="90"
+                  groups="hr_training_request.group_training_requester"
+                  web_icon="hr_training_request,static/description/icon.png"/>
+
+        <!-- ── Child Menu Items ── -->
+
+        <menuitem id="menu_training_my_requests"
+                  name="My Requests"
+                  parent="menu_training_root"
+                  action="action_training_request_my"
+                  sequence="10"
+                  groups="hr_training_request.group_training_requester"/>
+
+        <menuitem id="menu_training_pending_manager"
+                  name="Pending Manager Approval"
+                  parent="menu_training_root"
+                  action="action_training_request_pending_manager"
+                  sequence="20"
+                  groups="hr_training_request.group_training_manager"/>
+
+        <menuitem id="menu_training_pending_hr"
+                  name="Pending HR Approval"
+                  parent="menu_training_root"
+                  action="action_training_request_pending_hr"
+                  sequence="30"
+                  groups="hr_training_request.group_training_hr"/>
+
+        <menuitem id="menu_training_all"
+                  name="All Requests"
+                  parent="menu_training_root"
+                  action="action_training_request_all"
+                  sequence="40"
+                  groups="hr_training_request.group_training_hr"/>
+
+    </data>
+</odoo>

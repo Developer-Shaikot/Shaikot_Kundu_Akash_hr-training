@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Views for hr.training.request:
+      1. Form view   — data entry + workflow buttons + statusbar + HR notes tab
+      2. List view   — key columns with state badge + row decorations
+      3. Search view — state filters, My Requests, My Team, group-by options
+
+    NOTE on security in views:
+      - groups= attributes are UI convenience only — they hide elements for non-members.
+      - attrs invisible/readonly control state-based visibility/editability.
+      - Actual enforcement lives in Python action_*() methods (see models/).
+      - The hr_notes field/tab is BOTH hidden in XML (groups=) AND enforced at
+        the field definition level (groups= on fields.Text in the model).
+-->
+<odoo>
+    <data>
+
+        <!-- ═══════════════════════════════════════════════════════
+             FORM VIEW
+             ═══════════════════════════════════════════════════════ -->
+        <record id="view_hr_training_request_form" model="ir.ui.view">
+            <field name="name">hr.training.request.form</field>
+            <field name="model">hr.training.request</field>
+            <field name="arch" type="xml">
+                <form string="Training Request">
+                    <header>
+                        <!-- ── Workflow Buttons ── -->
+                        <!-- Submit: only in draft, only shown to Requesters (owner check in Python) -->
+                        <button name="action_submit"
+                                string="Submit"
+                                type="object"
+                                class="btn-primary"
+                                invisible="state != 'draft'"
+                                groups="hr_training_request.group_training_requester"/>
+
+                        <!-- Cancel: draft or submitted, only for Requesters (owner check in Python) -->
+                        <button name="action_cancel"
+                                string="Cancel"
+                                type="object"
+                                class="btn-secondary"
+                                invisible="state not in ['draft', 'submitted']"
+                                groups="hr_training_request.group_training_requester"/>
+
+                        <!-- Manager Approve/Reject: only at submitted stage, Manager group -->
+                        <button name="action_manager_approve"
+                                string="Approve"
+                                type="object"
+                                class="btn-primary"
+                                invisible="state != 'submitted'"
+                                groups="hr_training_request.group_training_manager"/>
+
+                        <button name="action_manager_reject"
+                                string="Reject"
+                                type="object"
+                                class="btn-danger"
+                                invisible="state != 'submitted'"
+                                groups="hr_training_request.group_training_manager"/>
+
+                        <!-- HR Final Approve/Reject: only at manager_approved stage, HR group -->
+                        <button name="action_hr_approve"
+                                string="Final Approve"
+                                type="object"
+                                class="btn-primary"
+                                invisible="state != 'manager_approved'"
+                                groups="hr_training_request.group_training_hr"/>
+
+                        <button name="action_hr_reject"
+                                string="Reject"
+                                type="object"
+                                class="btn-danger"
+                                invisible="state != 'manager_approved'"
+                                groups="hr_training_request.group_training_hr"/>
+
+                        <!-- Reset to Draft: for rejected/cancelled records, owner only -->
+                        <button name="action_reset_to_draft"
+                                string="Reset to Draft"
+                                type="object"
+                                class="btn-secondary"
+                                invisible="state not in ['rejected', 'cancelled']"
+                                groups="hr_training_request.group_training_requester"/>
+
+                        <!-- Status Bar: shows all meaningful stages in the progression -->
+                        <field name="state"
+                               widget="statusbar"
+                               statusbar_visible="draft,submitted,manager_approved,hr_approved"/>
+                    </header>
+
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="course_name"
+                                       placeholder="Course / Certification Name"
+                                       readonly="state != 'draft'"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="Request Details">
+                                <field name="employee_id"
+                                       readonly="state != 'draft'"/>
+                                <field name="manager_id"
+                                       readonly="1"/>
+                                <field name="training_provider"
+                                       readonly="state != 'draft'"/>
+                            </group>
+                            <group string="Schedule &amp; Cost">
+                                <field name="start_date"
+                                       readonly="state != 'draft'"/>
+                                <field name="end_date"
+                                       readonly="state != 'draft'"/>
+                                <!-- cost: editable only in draft state -->
+                                <field name="cost"
+                                       readonly="state != 'draft'"/>
+                            </group>
+                        </group>
+
+                        <group string="Justification">
+                            <!-- justification: editable only in draft state -->
+                            <field name="justification"
+                                   nolabel="1"
+                                   placeholder="Please explain why this training is needed and how it benefits the organisation…"
+                                   readonly="state != 'draft'"/>
+                        </group>
+
+                        <notebook>
+                            <!--
+                                HR Notes tab: exclusively visible and editable by HR Approvers.
+                                Enforced at two levels:
+                                  1. This XML groups= attribute (UI convenience)
+                                  2. The fields.Text groups= in the model definition (ORM enforcement)
+                            -->
+                            <page string="HR Notes"
+                                  groups="hr_training_request.group_training_hr">
+                                <group>
+                                    <field name="hr_notes"
+                                           nolabel="1"
+                                           placeholder="Internal HR notes (only visible to HR Approvers)…"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                    <!-- Chatter: tracks state changes and allows internal messages (mail.thread) -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             LIST (TREE) VIEW
+             ═══════════════════════════════════════════════════════ -->
+        <record id="view_hr_training_request_tree" model="ir.ui.view">
+            <field name="name">hr.training.request.tree</field>
+            <field name="model">hr.training.request</field>
+            <field name="arch" type="xml">
+                <!--
+                    Row-level decorations for quick visual status scanning.
+                    Badge widget on state column for per-cell coloring.
+                -->
+                <list string="Training Requests"
+                      decoration-muted="state in ('draft', 'cancelled')"
+                      decoration-info="state == 'submitted'"
+                      decoration-warning="state == 'manager_approved'"
+                      decoration-success="state == 'hr_approved'"
+                      decoration-danger="state == 'rejected'">
+
+                    <field name="employee_id"/>
+                    <field name="course_name"/>
+                    <field name="training_provider"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="cost" optional="show"/>
+                    <field name="state"
+                           widget="badge"
+                           decoration-secondary="state in ('draft', 'cancelled')"
+                           decoration-info="state == 'submitted'"
+                           decoration-warning="state == 'manager_approved'"
+                           decoration-success="state == 'hr_approved'"
+                           decoration-danger="state == 'rejected'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             SEARCH VIEW
+             ═══════════════════════════════════════════════════════ -->
+        <record id="view_hr_training_request_search" model="ir.ui.view">
+            <field name="name">hr.training.request.search</field>
+            <field name="model">hr.training.request</field>
+            <field name="arch" type="xml">
+                <search string="Search Training Requests">
+                    <!-- Searchable fields -->
+                    <field name="employee_id"/>
+                    <field name="course_name"/>
+                    <field name="training_provider"/>
+
+                    <!-- State filters -->
+                    <filter string="Draft"
+                            name="filter_draft"
+                            domain="[('state', '=', 'draft')]"/>
+                    <filter string="Submitted"
+                            name="filter_submitted"
+                            domain="[('state', '=', 'submitted')]"/>
+                    <filter string="Manager Approved"
+                            name="filter_manager_approved"
+                            domain="[('state', '=', 'manager_approved')]"/>
+                    <filter string="HR Approved"
+                            name="filter_hr_approved"
+                            domain="[('state', '=', 'hr_approved')]"/>
+                    <filter string="Rejected"
+                            name="filter_rejected"
+                            domain="[('state', '=', 'rejected')]"/>
+                    <filter string="Cancelled"
+                            name="filter_cancelled"
+                            domain="[('state', '=', 'cancelled')]"/>
+
+                    <separator/>
+
+                    <!-- User-context filters -->
+                    <filter string="My Requests"
+                            name="filter_my_requests"
+                            domain="[('employee_id.user_id', '=', uid)]"/>
+
+                    <!-- My Team: only shown to Manager Approvers (and above) -->
+                    <filter string="My Team"
+                            name="filter_my_team"
+                            domain="[('employee_id.parent_id.user_id', '=', uid)]"
+                            groups="hr_training_request.group_training_manager"/>
+
+                    <!-- Group By options -->
+                    <group expand="0" string="Group By">
+                        <filter string="Employee"
+                                name="groupby_employee"
+                                context="{'group_by': 'employee_id'}"/>
+                        <filter string="Status"
+                                name="groupby_state"
+                                context="{'group_by': 'state'}"/>
+                        <filter string="Start Date"
+                                name="groupby_start_date"
+                                context="{'group_by': 'start_date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+    </data>
+</odoo>

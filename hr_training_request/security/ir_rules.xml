@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Row-Level Record Rules for hr_training_request
+
+    Architecture (Defense-in-Depth Layer 1):
+    These rules inject SQL WHERE clauses for every ORM query on hr.training.request,
+    regardless of the access channel (UI, XML-RPC, JSON-RPC, ORM shell).
+
+    IMPORTANT — Rule Interaction:
+      Rules are group-scoped (NOT global). When a user belongs to multiple groups,
+      Odoo ORs the matching rules together, so the most permissive rule wins.
+      Example: An HR user matches rule_training_hr [(1='1')] which sees everything —
+      the more restrictive requester rule is effectively overridden.
+
+    Three rules, one per group:
+      1. Requesters   → own records only
+      2. Managers     → own + direct reports' records
+      3. HR Approvers → all records (company-wide)
+-->
+<odoo>
+    <data noupdate="1">
+
+        <!-- Rule 1: Training Requesters see only their own records -->
+        <record id="rule_training_request_requester" model="ir.rule">
+            <field name="name">Training Request: Requester sees own records only</field>
+            <field name="model_id" ref="model_hr_training_request"/>
+            <field name="groups" eval="[(4, ref('group_training_requester'))]"/>
+            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Rule 2: Training Managers see own records + direct reports' records -->
+        <record id="rule_training_request_manager" model="ir.rule">
+            <field name="name">Training Request: Manager sees own and team records</field>
+            <field name="model_id" ref="model_hr_training_request"/>
+            <field name="groups" eval="[(4, ref('group_training_manager'))]"/>
+            <field name="domain_force">
+                ['|',
+                    ('employee_id.user_id', '=', user.id),
+                    ('employee_id.parent_id.user_id', '=', user.id)
+                ]
+            </field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Rule 3: HR Approvers see all records (company-wide) -->
+        <record id="rule_training_request_hr" model="ir.rule">
+            <field name="name">Training Request: HR Approver sees all records</field>
+            <field name="model_id" ref="model_hr_training_request"/>
+            <field name="groups" eval="[(4, ref('group_training_hr'))]"/>
+            <!-- (1, '=', 1) is a domain that always evaluates to True — sees everything -->
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+    </data>
+</odoo>
