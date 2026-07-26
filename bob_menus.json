@@ -1,0 +1,256 @@
+{
+  "110": {
+    "id": 110,
+    "name": "Directory",
+    "children": [],
+    "appID": 106,
+    "xmlid": "hr.menu_hr_employee",
+    "actionID": 183,
+    "actionModel": "ir.actions.act_window",
+    "webIcon": false,
+    "webIconData": false,
+    "webIconDataMimetype": false
+  },
+  "115": {
+    "id": 115,
+    "name": "Departments",
+    "children": [],
+    "appID": 106,
+    "xmlid": "hr.menu_hr_department_tree",
+    "actionID": 191,
+    "actionModel": "ir.actions.act_window",
+    "webIcon": false,
+    "webIconData": false,
+    "webIconDataMimetype": false
+  },
+  "47": {
+    "id": 47,
+    "name": "Apps",
+    "children": [
+      48,
+      51,
+      50
+    ],
+    "appID": 15,
+    "xmlid": "base.menu_apps",
+    "actionID": false,
+    "actionModel": false,
+    "webIcon": false,
+    "webIconData": false,
+    "webIconDataMimetype": false
+  },
+  "48": {
+    "id": 48,
+    "name": "Main Apps",
+    "children": [],
+    "appID": 15,
+    "xmlid": "base.menu_module_tree",
+    "actionID": 38,
+    "actionModel": "ir.actions.act_window",
+    "webIcon": false,
+    "webIconData": false,
+    "webIconDataMimetype": false
+  },
+  "74": {
+    "id": 74,
+    "name": "Discuss",
+    "children": [],
+    "appID": 74,
+    "xmlid": "mail.menu_root_discuss",
+    "actionID": 140,
+    "actionModel": "ir.actions.client",
+    "webIcon": "mail,static/description/icon.png",
+    "webIconData": "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",
+    "webIconDataMimetype": "image/png"
+  },
+  "117": {
+    "id": 117,
+    "name": "Work Locations",
+    "children": [],
+    "appID": 106,
+    "xmlid": "hr.menu_hr_work_location_tree",
+    "actionID": 192,
+    "actionModel": "ir.actions.act_window",
+    "webIcon": false,
+    "webIconData": false,
+    "webIconDataMimetype": false
+  },
+  "118": {
+    "id": 118,
+    "name": "Working Schedules",
+    "children": [],
+    "appID": 106,
+    "xmlid": "hr.menu_resource_calendar_view",
+    "actionID": 93,
+    "actionModel": "ir.actions.act_window",
+    "webIcon": false,
+    "webIconData": false,
+    "webIconDataMimetype": false
+  },
+  "133": {
+    "id": 133,
+    "name": "Skill Types",
+    "children": [],
+    "appID": 106,
+    "xmlid": "hr_skills.hr_skill_type_menu",
+    "actionID": 213,
+    "actionModel": "ir.actions.act_window",
+    "webIcon": false,
+    "webIconData": false,
+    "webIconDataMimetype": false
+  },
+  "51": {
+    "id": 51,
+    "name": "Theme Store",
+    "children": [],
+    "appID": 15,
+    "xmlid": "base.menu_theme_store",
+    "actionID": 40,
+    "actionModel": "ir.actions.act_url",
+    "webIcon": false,
+    "webIconData": false,
+    "webIconDataMimetype": false
+  },
+  "114": {
+    "id": 114,
+    "name": "Employee",
+    "children": [
+      115,
+      117,
+      118,
+      133
+    ],
+    "appID": 106,
+    "xmlid": "hr.menu_config_employee",
+    "actionID": false,
+    "actionModel": false,
+    "webIcon": false,
+    "webIconData": false,
+    "webIconDataMimetype": false
+  },
+  "116": {
+    "id": 116,
+    "name": "Departments",
+    "children": [],
+    "appID": 106,
+    "xmlid": "hr.menu_hr_department_kanban",
+    "actionID": 190,
+    "actionModel": "ir.actions.act_window",
+    "webIcon": false,
+    "webIconData": false,
+    "webIconDataMimetype": false
+  },
+  "136": {
+    "id": 136,
+    "name": "My Requests",
+    "children": [],
+    "appID": 135,
+    "xmlid": "hr_training_request.menu_training_my_requests",
+    "actionID": 221,
+    "actionModel": "ir.actions.act_window",
+    "webIcon": false,
+    "webIconData": false,
+    "webIconDataMimetype": false
+  },
+  "50": {
+    "id": 50,
+    "name": "Third-Party Apps",
+    "children": [],
+    "appID": 15,
+    "xmlid": "base.menu_third_party",
+    "actionID": 39,
+    "actionModel": "ir.actions.act_url",
+    "webIcon": false,
+    "webIconData": false,
+    "webIconDataMimetype": false
+  },
+  "137": {
+    "id": 137,
+    "name": "Pending Manager Approval",
+    "children": [],
+    "appID": 135,
+    "xmlid": "hr_training_request.menu_training_pending_manager",
+    "actionID": 222,
+    "actionModel": "ir.actions.act_window",
+    "webIcon": false,
+    "webIconData": false,
+    "webIconDataMimetype": false
+  },
+  "135": {
+    "id": 135,
+    "name": "Training",
+    "children": [
+      136,
+      137
+    ],
+    "appID": 135,
+    "xmlid": "hr_training_request.menu_training_root",
+    "actionID": 221,
+    "actionModel": "ir.actions.act_window",
+    "webIcon": "hr_training_request,static/description/icon.png",
+    "webIconData": false,
+    "webIconDataMimetype": false
+  },
+  "113": {
+    "id": 113,
+    "name": "Configuration",
+    "children": [
+      114
+    ],
+    "appID": 106,
+    "xmlid": "hr.menu_human_resources_configuration",
+    "actionID": false,
+    "actionModel": false,
+    "webIcon": false,
+    "webIconData": false,
+    "webIconDataMimetype": false
+  },
+  "106": {
+    "id": 106,
+    "name": "Employees",
+    "children": [
+      110,
+      116,
+      113
+    ],
+    "appID": 106,
+    "xmlid": "hr.menu_hr_root",
+    "actionID": 183,
+    "actionModel": "ir.actions.act_window",
+    "webIcon": "hr,static/description/icon.png",
+    "webIconData": "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",
+    "webIconDataMimetype": "image/png"
+  },
+  "15": {
+    "id": 15,
+    "name": "Apps",
+    "children": [
+      47
+    ],
+    "appID": 15,
+    "xmlid": "base.menu_management",
+    "actionID": 38,
+    "actionModel": "ir.actions.act_window",
+    "webIcon": "base,static/description/modules.png",
+    "webIconData": "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAh/SURBVHgB7Z1fcxPXFcDPubsSNiFT540MD8h5LolIP0AEsTNJh4kFXwDKQ2d4KbivnWA50D425imkDwXyAVq5Q1IGM5boeythOp0+xeIlw1PwTCA23t17cs7qD7LRn5W0knbl+2OEtasVXvzTOefeu3evESLO0dI/U2ipNKB1HEDPIsBxQEx9/8v5k+3ec/PsdT4M1qtb9AhIbRLoR1PglX+Tz21BhEGIGL4AO7GAoDMAih800+q470/Mtz33mhDd+lWqsNAyapVHlvXb/B/KECEiIeRoaS2DNmUB1QISpYK8p38h+xFBUCQNdy7lPyvCmBmbkJlSYeaw7V4mxAtBJTQTnpBmaBPJWtaw+/BSPleBMWDDiPGjwaILiN4Cb86wDIgOOEuobyP/WG6eu3abtLc8ajEji5CjpQLXBvcWf8MMhMBwIqQFSCMVo2DISGo6trH2hbLdzbBkjBTilIr2JkfMrS+zuRQMmaEKefvxg8uHbW+TEK5A3PHFWOtfZf90HobIUFJW2OmpFSNLWa0pELkXh5HGQo8QiQple6VYpqfgnFJo/+er7PXQIz80IfVawZ2tlXaduUmC24ZvcSr+4ua563+GEAlFiKSowwm3MBG1olcIFm+evfZdWAV/YCEiQyW8Ap9YGg4sOCsFPwwpAwk5ViqkpV5AHz3tyQNnpa78JfvHgT6YfQsRGWRzZByAehGUal2h9UGk9CXEyGjPoFJ6FiI1w8joTF1KPzWlJyGNAm5kdEWk9FPoAwuRfka1NWUKeHD8Qv+3W9lc4A9wYCFvWO6SkdE7HCknXyr7atDjAwmR4ZAD2ekLC4IrQYdZugrxBwoBcmAYBOQ/V4PUk65CZNTWFPHBqRZ5+6/djuso5NjG/QsTPmo7ajLdUldbIX5/Q6klMISJn7o6tbraCkHLyZlWVfhI6urU6mopxC/kiEO9VHmg4VZXuwLfUogfHYZhgu0K/GtCTHSMjEyrAcjXhJjoGBmolf7d/p17hJjoGC1ImN3f4tojxLKcDBhGhrS4dsDa0y/ZI8T0O8YA4qfNmw0hRx+vZUy/Y/TwSEj6y+y1TH27IQSJLoBhHCBLWahvvBKi1AdgGA+4T8ix0v20SVfjBFP1nrsvRCvMgGGsKLCz1a8g6YpMuhovSIrelSfVGoIqbtNAO985y9eb+VGBOEHV604qVSrMxK5+IHa5lVluDdGrECswJb12tWO7sZskrR1nudPr3AOWW0ljJgTgJdofKNTxmrVOQDeenvyk0umYS/nPpMNVZC03IEYgwaxSEKd0ReVt90UuyJHb4NEOeMvUrd5EB/ZBxxU3ed+DGCCR8ZP74tTWybOB1ipZzOckdT17Se6puEQKAabw7cdrhajOLCHklhLpVT7R/NMT80XoE+50yZcUgC1P3uOxikimaf4AlcBgMBgMBoPBYJh88OX8GYzeyotV/NPiUSnPStD0vTz0S6ZAsOW6UJ5PNPa9+2C38b/emEtSq/3Nr4W1v9NrJ3i/CClBRDtKKMMeRGUW8rmlnUpi9wVhsRj8H2CZKT78F56LPC6RcYkWlEUL3ONMQQRhKwUeyoIKRBQ+wbSsyai0+x1vyiIvb1EmE/DNVRlYWyRGI63zwN3lqMqoo/hkn0AM4OGTK07yiKzFG+hurrqMN11nneVchhjA5/tIaaIKxASJGCf5xtL23JmOx0nNeFO7yI+lqKbjFvD4qa5wSo3XpU6JFOgyGPoUdsBRbioukVFHA3GEJNy4XC9ogKiznV5POAr5EbtpsbY9VVbT9+5V/NWdYwSitdDxdYXyiMV1niYq5VO4VZ11ojFmURLoKme85gqQfiRffCEe0EMwjBMujfbf5Ul1opzt9d8NNoSC0nrD/yp/xbGOTBiV8kdJv2w0Zr8TYezmMU0K/pSlGk1CwKSt8UAeeV/XNxpCph/cLZq0NRYq/52fLtY39txjqAHvgGGU8GiQyjXv2CNkatde4UMi/UuzJg3lOP/as928gcX8lkZTS0YFF/Pb5U+mK837XlvJwSIdqwnKMYbQ8T7fv/M1Icm1b8t8da0AhqHSKjqElqsBeZZ7EQzDpGV0CC2FSM+d+yUrYBgG1C46hLYryh1y7GVucT0DQ9hU2kWH0H6JP25xEVHbNxr6wu93tIsOoeOqpFMPvlkxBT482EZxY87+utMxXdft9Qu8SV1h8MxyvK6Npa5CqgXepK4BkRkly51SVZ1Aa79L6jKtrr6RaaI3NuanAnW4AwkRaq0ucw9c72xuzCUXgx4cWIg/zmW55+RXXIMhKJvK8T7s5Q2BhQhST7TyTpsiH4gfWMbpIHWjmZ6ECCLFAW2kdOYHpXc/7FWG0LMQ4QgPQBopbanK+OhIX3Pd+hIiGCktGUiG0LcQQaRwoX/fFHofKeC/GkSGMJAQoVHoD64Uku5APwW8FQMLEUTKofvfvFPrPBIcHPxOn3qeCEWGEIqQOlNrdxdJ0+8PSF15xsMhi9LpK5/F0CaGhCpEkGEWqSu1UeJJjBbyb850vPeDDof0QuhCBElhybW7pzXpixNWW/yoeDyXDC1F7WcoQupMr317Wwq+5kuWEO9okXNfUT8m3hlGVDQzsiUDtj/+OAXaXuJPwPkwvu+h+3fb/hu1G/M1DI6kp6JcxxhWROxn5Gs47BPT9zkMUYhEwxa/+44LcOd/tdsERsXYFtXwxXgqoxCvypq1vZ7LEISICFk5YlU9T94Is+XUC5FY5WR77kyGq9l5BbLkOaZquzueWwhCqjUNqQIermr0VptnoY+LyC0783z+12kLIK3Q+pR/pukmQULjfHsU8qpBwQKIsCjrqOw63j/+P6LaEJSIrgP0CspkZnbsI2lEkNucU1x7/NudpVnd7j01If/mMY0KanzC0bfJz59YPyYfjisVBeVnH+2pfmKww+4AAAAASUVORK5CYII=",
+    "webIconDataMimetype": "image/png"
+  },
+  "root": {
+    "id": "root",
+    "name": "root",
+    "children": [
+      74,
+      135,
+      106,
+      15
+    ],
+    "appID": false,
+    "xmlid": "",
+    "actionID": false,
+    "actionModel": false,
+    "webIcon": null,
+    "webIconData": null,
+    "webIconDataMimetype": null,
+    "backgroundImage": null
+  }
+}

@@ -22,7 +22,7 @@
         <record id="action_training_request_my" model="ir.actions.act_window">
             <field name="name">My Training Requests</field>
             <field name="res_model">hr.training.request</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">kanban,tree,form,pivot,graph</field>
             <!-- Pre-filtered to the current user's requests -->
             <field name="domain">[('employee_id.user_id', '=', uid)]</field>
             <field name="context">{
@@ -41,7 +41,7 @@
         <record id="action_training_request_pending_manager" model="ir.actions.act_window">
             <field name="name">Pending Manager Approval</field>
             <field name="res_model">hr.training.request</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">kanban,tree,form,pivot,graph</field>
             <!-- Pre-filtered to submitted requests awaiting manager action -->
             <field name="domain">[('state', '=', 'submitted')]</field>
             <field name="context">{
@@ -61,7 +61,7 @@
         <record id="action_training_request_pending_hr" model="ir.actions.act_window">
             <field name="name">Pending HR Approval</field>
             <field name="res_model">hr.training.request</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">kanban,tree,form,pivot,graph</field>
             <!-- Pre-filtered to manager-approved requests awaiting HR action -->
             <field name="domain">[('state', '=', 'manager_approved')]</field>
             <field name="context">{
@@ -80,7 +80,7 @@
         <record id="action_training_request_all" model="ir.actions.act_window">
             <field name="name">All Training Requests</field>
             <field name="res_model">hr.training.request</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">kanban,tree,form,pivot,graph</field>
             <!-- No domain restriction — record rules handle visibility -->
             <field name="domain">[]</field>
             <field name="context">{}</field>
@@ -100,7 +100,7 @@
                   name="Training"
                   sequence="90"
                   groups="hr_training_request.group_training_requester"
-                  web_icon="hr_training_request,static/description/icon.png"/>
+                  web_icon="hr,static/description/icon.png"/>
 
         <!-- ── Child Menu Items ── -->
 

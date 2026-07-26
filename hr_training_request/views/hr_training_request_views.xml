@@ -86,6 +86,9 @@
                     </header>
 
                     <sheet>
+                        <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                        <field name="active" invisible="1"/>
+                        <field name="currency_id" invisible="1"/>
                         <div class="oe_title">
                             <h1>
                                 <field name="course_name"
@@ -102,6 +105,7 @@
                                        readonly="1"/>
                                 <field name="training_provider"
                                        readonly="state != 'draft'"/>
+                                <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
                             </group>
                             <group string="Schedule &amp; Cost">
                                 <field name="start_date"
@@ -161,7 +165,7 @@
                     Row-level decorations for quick visual status scanning.
                     Badge widget on state column for per-cell coloring.
                 -->
-                <list string="Training Requests"
+                <tree string="Training Requests"
                       decoration-muted="state in ('draft', 'cancelled')"
                       decoration-info="state == 'submitted'"
                       decoration-warning="state == 'manager_approved'"
@@ -173,15 +177,11 @@
                     <field name="training_provider"/>
                     <field name="start_date"/>
                     <field name="end_date"/>
+                    <field name="company_id" groups="base.group_multi_company" optional="show"/>
                     <field name="cost" optional="show"/>
-                    <field name="state"
-                           widget="badge"
-                           decoration-secondary="state in ('draft', 'cancelled')"
-                           decoration-info="state == 'submitted'"
-                           decoration-warning="state == 'manager_approved'"
-                           decoration-success="state == 'hr_approved'"
-                           decoration-danger="state == 'rejected'"/>
-                </list>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="state" widget="badge"/>
+                </tree>
             </field>
         </record>
 
@@ -217,6 +217,10 @@
                     <filter string="Cancelled"
                             name="filter_cancelled"
                             domain="[('state', '=', 'cancelled')]"/>
+                    <separator/>
+                    <filter string="Archived"
+                            name="filter_archived"
+                            domain="[('active', '=', False)]"/>
 
                     <separator/>
 
@@ -244,6 +248,78 @@
                                 context="{'group_by': 'start_date:month'}"/>
                     </group>
                 </search>
+            </field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             KANBAN VIEW
+             ═══════════════════════════════════════════════════════ -->
+        <record id="view_hr_training_request_kanban" model="ir.ui.view">
+            <field name="name">hr.training.request.kanban</field>
+            <field name="model">hr.training.request</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state" class="o_kanban_small_column" sample="1">
+                    <field name="course_name"/>
+                    <field name="employee_id"/>
+                    <field name="state"/>
+                    <field name="cost"/>
+                    <field name="currency_id"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click">
+                                <div class="o_dropdown_kanban dropdown">
+                                    <a class="dropdown-toggle o-no-caret btn" role="button" data-bs-toggle="dropdown" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                        <span class="fa fa-ellipsis-v"/>
+                                    </a>
+                                    <div class="dropdown-menu" role="menu">
+                                        <t t-if="widget.editable"><a role="menuitem" type="edit" class="dropdown-item">Edit</a></t>
+                                        <t t-if="widget.deletable"><a role="menuitem" type="delete" class="dropdown-item">Delete</a></t>
+                                    </div>
+                                </div>
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_title">
+                                        <strong><field name="course_name"/></strong>
+                                    </div>
+                                    <div class="o_kanban_record_subtitle">
+                                        <field name="employee_id"/>
+                                    </div>
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             PIVOT VIEW
+             ═══════════════════════════════════════════════════════ -->
+        <record id="view_hr_training_request_pivot" model="ir.ui.view">
+            <field name="name">hr.training.request.pivot</field>
+            <field name="model">hr.training.request</field>
+            <field name="arch" type="xml">
+                <pivot string="Training Analysis" sample="1">
+                    <field name="employee_id" type="row"/>
+                    <field name="state" type="col"/>
+                    <field name="cost" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             GRAPH VIEW
+             ═══════════════════════════════════════════════════════ -->
+        <record id="view_hr_training_request_graph" model="ir.ui.view">
+            <field name="name">hr.training.request.graph</field>
+            <field name="model">hr.training.request</field>
+            <field name="arch" type="xml">
+                <graph string="Training Analysis" type="bar" sample="1">
+                    <field name="employee_id"/>
+                    <field name="cost" type="measure"/>
+                </graph>
             </field>
         </record>
 

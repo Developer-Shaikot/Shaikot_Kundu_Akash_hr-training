@@ -20,6 +20,9 @@
         'views/hr_training_request_views.xml',
         'views/hr_employee_views.xml',
         'views/menus.xml',
+        # Data
+        'data/mail_templates.xml',
+        'data/cron_jobs.xml',
     ],
     'demo': [
         'data/demo_data.xml',

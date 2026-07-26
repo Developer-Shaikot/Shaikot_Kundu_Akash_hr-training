@@ -16,6 +16,7 @@ Security is enforced at FOUR independent layers:
 
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError, ValidationError
+import datetime
 
 
 class HrTrainingRequest(models.Model):
@@ -28,6 +29,27 @@ class HrTrainingRequest(models.Model):
     # ─────────────────────────────────────────────
     # Fields
     # ─────────────────────────────────────────────
+
+    active = fields.Boolean(
+        string='Active',
+        default=True,
+        help='Set active to false to hide the training request without removing it.',
+    )
+
+    company_id = fields.Many2one(
+        comodel_name='res.company',
+        string='Company',
+        required=True,
+        default=lambda self: self.env.company,
+    )
+
+    currency_id = fields.Many2one(
+        comodel_name='res.currency',
+        string='Currency',
+        related='company_id.currency_id',
+        store=True,
+        readonly=True,
+    )
 
     employee_id = fields.Many2one(
         comodel_name='hr.employee',
@@ -69,9 +91,9 @@ class HrTrainingRequest(models.Model):
         tracking=True,
     )
 
-    cost = fields.Float(
+    cost = fields.Monetary(
         string='Estimated Cost',
-        digits=(10, 2),
+        currency_field='currency_id',
         tracking=True,
         help='Estimated or actual cost of the training (in company currency).',
     )
@@ -198,6 +220,11 @@ class HrTrainingRequest(models.Model):
 
             # Step 4: Execute transition
             rec.state = 'submitted'
+            
+            # Send notification email
+            template = self.env.ref('hr_training_request.email_template_training_request_submitted', raise_if_not_found=False)
+            if template:
+                template.send_mail(rec.id, force_send=True)
         return True
 
     def action_cancel(self):
@@ -247,6 +274,11 @@ class HrTrainingRequest(models.Model):
 
             # Step 4: Execute transition
             rec.state = 'manager_approved'
+            
+            # Send notification email
+            template = self.env.ref('hr_training_request.email_template_training_request_manager_approved', raise_if_not_found=False)
+            if template:
+                template.send_mail(rec.id, force_send=True)
         return True
 
     def action_manager_reject(self):
@@ -272,6 +304,11 @@ class HrTrainingRequest(models.Model):
 
             # Step 4: Execute transition
             rec.state = 'rejected'
+            
+            # Send notification email
+            template = self.env.ref('hr_training_request.email_template_training_request_rejected', raise_if_not_found=False)
+            if template:
+                template.send_mail(rec.id, force_send=True)
         return True
 
     def action_hr_approve(self):
@@ -296,6 +333,11 @@ class HrTrainingRequest(models.Model):
 
             # Step 4: Execute transition
             rec.state = 'hr_approved'
+            
+            # Send notification email
+            template = self.env.ref('hr_training_request.email_template_training_request_final_approved', raise_if_not_found=False)
+            if template:
+                template.send_mail(rec.id, force_send=True)
         return True
 
     def action_hr_reject(self):
@@ -320,6 +362,11 @@ class HrTrainingRequest(models.Model):
 
             # Step 4: Execute transition
             rec.state = 'rejected'
+            
+            # Send notification email
+            template = self.env.ref('hr_training_request.email_template_training_request_rejected', raise_if_not_found=False)
+            if template:
+                template.send_mail(rec.id, force_send=True)
         return True
 
     def action_reset_to_draft(self):
@@ -340,3 +387,53 @@ class HrTrainingRequest(models.Model):
                 ))
             rec.state = 'draft'
         return True
+
+    def unlink(self):
+        """
+        Prevent deletion of non-draft/cancelled requests.
+        """
+        for rec in self:
+            if rec.state not in ('draft', 'cancelled'):
+                raise UserError(_(
+                    'You cannot delete a training request that is not in draft or cancelled state. '
+                    'Please cancel and archive it instead.'
+                ))
+        return super(HrTrainingRequest, self).unlink()
+
+    @api.model
+    def _cron_send_reminders(self):
+        """
+        Cron job to find requests stuck in 'submitted' or 'manager_approved' 
+        for more than 3 days and create a mail.activity reminder for the responsible user.
+        """
+        three_days_ago = fields.Datetime.now() - datetime.timedelta(days=3)
+        stuck_requests = self.search([
+            ('state', 'in', ['submitted', 'manager_approved']),
+            ('write_date', '<=', three_days_ago)
+        ])
+        
+        for req in stuck_requests:
+            if req.state == 'submitted':
+                user_id = req.manager_id.user_id.id if req.manager_id and req.manager_id.user_id else False
+                summary = 'Reminder: Pending Manager Approval'
+            else:
+                hr_users = self.env.ref('hr_training_request.group_training_hr').users
+                user_id = hr_users[0].id if hr_users else False
+                summary = 'Reminder: Pending HR Approval'
+                
+            if user_id:
+                # Check if an activity of this type already exists to avoid spamming
+                existing_activity = self.env['mail.activity'].search([
+                    ('res_model', '=', self._name),
+                    ('res_id', '=', req.id),
+                    ('user_id', '=', user_id),
+                    ('summary', '=', summary)
+                ])
+                if not existing_activity:
+                    req.activity_schedule(
+                        'mail.mail_activity_data_todo',
+                        user_id=user_id,
+                        summary=summary,
+                        note='This training request has been pending for more than 3 days.'
+                    )
+

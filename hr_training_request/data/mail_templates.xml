@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Email to Manager upon Submission -->
+        <record id="email_template_training_request_submitted" model="mail.template">
+            <field name="name">Training Request: Submitted (to Manager)</field>
+            <field name="model_id" ref="hr_training_request.model_hr_training_request"/>
+            <field name="subject">Training Request Submitted: {{ object.course_name }}</field>
+            <field name="email_from">{{ (object.employee_id.work_email or object.employee_id.user_id.email_formatted) }}</field>
+            <field name="email_to">{{ object.manager_id.work_email or object.manager_id.user_id.email_formatted }}</field>
+            <field name="description">Sent to manager when an employee submits a training request</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+        Dear <t t-out="object.manager_id.name or 'Manager'"/>,
+        <br/><br/>
+        A new training request has been submitted by <strong><t t-out="object.employee_id.name"/></strong> for your approval.
+        <br/><br/>
+        <strong>Course:</strong> <t t-out="object.course_name"/><br/>
+        <strong>Cost:</strong> <t t-out="format_amount(object.cost, object.currency_id)"/><br/>
+        <br/>
+        Please review and approve or reject it at your earliest convenience.
+        <br/><br/>
+        Thank you,
+        <br/>
+        <t t-out="user.company_id.name"/>
+    </p>
+</div>
+            </field>
+        </record>
+
+        <!-- Email to HR upon Manager Approval -->
+        <record id="email_template_training_request_manager_approved" model="mail.template">
+            <field name="name">Training Request: Manager Approved (to HR)</field>
+            <field name="model_id" ref="hr_training_request.model_hr_training_request"/>
+            <field name="subject">Training Request Manager Approved: {{ object.course_name }}</field>
+            <field name="email_to">hr@example.com</field> <!-- In practice, this could be a group email or HR contact -->
+            <field name="description">Sent to HR when a manager approves a training request</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+        Dear HR Team,
+        <br/><br/>
+        The training request for <strong><t t-out="object.course_name"/></strong> submitted by <strong><t t-out="object.employee_id.name"/></strong> has been approved by their manager.
+        <br/><br/>
+        It is now awaiting your final review and approval.
+        <br/><br/>
+        Thank you,
+        <br/>
+        <t t-out="user.company_id.name"/>
+    </p>
+</div>
+            </field>
+        </record>
+
+        <!-- Email to Employee upon Final Approval -->
+        <record id="email_template_training_request_final_approved" model="mail.template">
+            <field name="name">Training Request: Final Approved (to Employee)</field>
+            <field name="model_id" ref="hr_training_request.model_hr_training_request"/>
+            <field name="subject">Training Request Approved: {{ object.course_name }}</field>
+            <field name="email_to">{{ object.employee_id.work_email or object.employee_id.user_id.email_formatted }}</field>
+            <field name="description">Sent to employee when HR finally approves the request</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+        Dear <t t-out="object.employee_id.name"/>,
+        <br/><br/>
+        Good news! Your training request for <strong><t t-out="object.course_name"/></strong> has received final approval.
+        <br/><br/>
+        Enjoy your training!
+        <br/><br/>
+        Thank you,
+        <br/>
+        <t t-out="user.company_id.name"/>
+    </p>
+</div>
+            </field>
+        </record>
+
+        <!-- Email to Employee upon Rejection -->
+        <record id="email_template_training_request_rejected" model="mail.template">
+            <field name="name">Training Request: Rejected (to Employee)</field>
+            <field name="model_id" ref="hr_training_request.model_hr_training_request"/>
+            <field name="subject">Training Request Update: {{ object.course_name }}</field>
+            <field name="email_to">{{ object.employee_id.work_email or object.employee_id.user_id.email_formatted }}</field>
+            <field name="description">Sent to employee when request is rejected</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+        Dear <t t-out="object.employee_id.name"/>,
+        <br/><br/>
+        Your training request for <strong><t t-out="object.course_name"/></strong> has been rejected.
+        <br/><br/>
+        Please check the system for any notes or contact your manager for more details.
+        <br/><br/>
+        Thank you,
+        <br/>
+        <t t-out="user.company_id.name"/>
+    </p>
+</div>
+            </field>
+        </record>
+
+    </data>
+</odoo>
