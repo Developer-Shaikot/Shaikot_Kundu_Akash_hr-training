@@ -1,9 +1,0 @@
-{
-    "python.defaultInterpreterPath": "C:\\Program Files\\Odoo 17.0.20260717\\python\\python.exe",
-    "python.analysis.extraPaths": [
-        "C:\\Program Files\\Odoo 17.0.20260717\\server"
-    ],
-    "python.autoComplete.extraPaths": [
-        "C:\\Program Files\\Odoo 17.0.20260717\\server"
-    ]
-}
