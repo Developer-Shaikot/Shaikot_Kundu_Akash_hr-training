@@ -1,4 +1,4 @@
-# HR Training Request Assignment
+# HR Training Request Assignment Submittted by SHAIKOT KUNDU AKASH
 
 This repository contains the completed **HR Training Request Module** assignment for Odoo.
 
